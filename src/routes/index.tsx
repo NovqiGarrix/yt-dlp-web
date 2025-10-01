@@ -7,6 +7,16 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: App,
+  head: () => ({
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        title: "YouTubeMp3 | ytmp3.nvhub.my.id",
+      },
+    ],
+  }),
 });
 
 function App() {
