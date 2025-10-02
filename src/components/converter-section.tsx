@@ -216,21 +216,14 @@ export function ConverterSection() {
               </div>
               <div className="mt-4 flex flex-col gap-3 sm:mt-5 sm:flex-row sm:items-center">
                 {downloadUrl ? (
-                  <button
-                    type="button"
+                  <a
+                    href={downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 disabled:opacity-65 transition hover:scale-[1.02] sm:w-auto"
-                    onClick={() => {
-                      // Programmatically trigger download for better mobile support
-                      const link = document.createElement("a");
-                      link.href = downloadUrl;
-                      link.download = "";
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
                   >
                     Download Now
-                  </button>
+                  </a>
                 ) : (
                   <button
                     type="button"
