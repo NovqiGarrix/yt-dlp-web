@@ -23,6 +23,7 @@ const youtubeUrlRule = z.url().refine(
 
 export function ConverterSection() {
   const [url, setUrl] = useState("");
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   const {
     data: videoInfo,
@@ -82,10 +83,10 @@ export function ConverterSection() {
         throw downloadUrlResult.error;
       }
 
-      return downloadUrlResult.value;
+      setDownloadUrl(downloadUrlResult.value);
     },
-    onSuccess: (downloadUrl: string) => {
-      window.location.href = downloadUrl;
+    onSuccess: () => {
+      toast.success("Success! Click Download Now to save the audio file.");
     },
     onError: (error) => {
       if (error instanceof ZodError || error instanceof FetchError) {
@@ -214,21 +215,31 @@ export function ConverterSection() {
                 </div>
               </div>
               <div className="mt-4 flex flex-col gap-3 sm:mt-5 sm:flex-row sm:items-center">
-                <button
-                  type="button"
-                  disabled={isDownloadingAudio}
-                  onClick={() => downloadAudio()}
-                  className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 disabled:opacity-65 transition hover:scale-[1.02] sm:w-auto"
-                >
-                  {isDownloadingAudio ? (
-                    <>
-                      <Loader2Icon className="size-5 mr-2 animate-spin text-white" />
-                      Downloading...
-                    </>
-                  ) : (
-                    "Download audio"
-                  )}
-                </button>
+                {downloadUrl ? (
+                  <a
+                    href={downloadUrl}
+                    download
+                    className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 disabled:opacity-65 transition hover:scale-[1.02] sm:w-auto"
+                  >
+                    Download Now
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={isDownloadingAudio}
+                    onClick={() => downloadAudio()}
+                    className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 disabled:opacity-65 transition hover:scale-[1.02] sm:w-auto"
+                  >
+                    {isDownloadingAudio ? (
+                      <>
+                        <Loader2Icon className="size-5 mr-2 animate-spin text-white" />
+                        Converting...
+                      </>
+                    ) : (
+                      "Convert Audio"
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           )}
