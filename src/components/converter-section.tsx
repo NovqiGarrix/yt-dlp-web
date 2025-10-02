@@ -1,10 +1,11 @@
 import {
-  fetchDownloadAudioUrl,
+  getDownloadUrl,
   FetchError,
   fetchVideoInfo,
   ZodError,
+  fetchDownloadUrl,
 } from "@/api/video";
-import { formatViews } from "@/lib/utils";
+import { formatViews, titleToFilename } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -78,12 +79,19 @@ export function ConverterSection() {
   const { mutate: downloadAudio, isPending: isDownloadingAudio } = useMutation({
     mutationKey: ["downloadAudio", url],
     mutationFn: async () => {
-      const downloadUrlResult = await fetchDownloadAudioUrl(url);
+      const downloadUrlResult = await getDownloadUrl(url);
       if (downloadUrlResult.isErr()) {
         throw downloadUrlResult.error;
       }
 
-      setDownloadUrl(downloadUrlResult.value);
+      // setDownloadUrl(downloadUrlResult.value);
+      const audioBlobResult = await fetchDownloadUrl(downloadUrlResult.value);
+      if (audioBlobResult.isErr()) {
+        throw audioBlobResult.error;
+      }
+
+      const downloadUrl = URL.createObjectURL(audioBlobResult.value);
+      setDownloadUrl(downloadUrl);
     },
     onSuccess: () => {
       toast.success("Success! Click Download Now to save the audio file.");
@@ -147,41 +155,6 @@ export function ConverterSection() {
             </div>
           </label>
 
-          {/* --- Audio format & trim options ---- */}
-          {/* <div className="grid gap-4 sm:grid-cols-2">
-            <label className="rounded-2xl border border-white/5 bg-slate-950/70 p-4 text-sm text-slate-200 shadow-inner shadow-black/20">
-              <span className="mb-2 block text-xs uppercase tracking-widest text-slate-400">
-                Format
-              </span>
-              <select className="w-full bg-transparent text-base font-semibold text-white outline-none">
-                <option className="bg-slate-900">MP3 · 320kbps</option>
-                <option className="bg-slate-900">MP3 · 192kbps</option>
-                <option className="bg-slate-900">AAC · 256kbps</option>
-                <option className="bg-slate-900">WAV · Lossless</option>
-              </select>
-            </label>
-
-            <label className="rounded-2xl border border-white/5 bg-slate-950/70 p-4 text-sm text-slate-200 shadow-inner shadow-black/20">
-              <span className="mb-2 block text-xs uppercase tracking-widest text-slate-400">
-                Trim Audio (optional)
-              </span>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00:00"
-                  className="w-full rounded-xl bg-slate-900/80 px-3 py-2 text-white outline-none placeholder:text-slate-500"
-                />
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="03:30"
-                  className="w-full rounded-xl bg-slate-900/80 px-3 py-2 text-white outline-none placeholder:text-slate-500"
-                />
-              </div>
-            </label>
-          </div> */}
-
           {videoInfo && (
             <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-200 shadow-inner shadow-black/20">
               <div className="grid gap-4 sm:grid-cols-[minmax(0,160px),1fr] sm:items-start">
@@ -218,8 +191,7 @@ export function ConverterSection() {
                 {downloadUrl ? (
                   <a
                     href={downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    download={titleToFilename(videoInfo.title)}
                     className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 disabled:opacity-65 transition hover:scale-[1.02] sm:w-auto"
                   >
                     Download Now
