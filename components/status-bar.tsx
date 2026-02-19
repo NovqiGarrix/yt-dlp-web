@@ -1,18 +1,15 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { Activity, Wifi } from "lucide-react";
-import { HTMLAttributes } from "react";
+import { cn } from '@/lib/utils';
+import { Activity, Wifi } from 'lucide-react';
+import { HTMLAttributes } from 'react';
 
-export function StatusBar({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+export function StatusBar({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
-        "h-6 bg-[#528bff] text-white flex items-center justify-between px-3 text-[10px] font-mono select-none",
-        className,
+        'h-6 bg-primary text-primary-foreground flex items-center justify-between px-3 text-[10px] font-mono select-none',
+        className
       )}
       {...props}
     >
